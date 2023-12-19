@@ -109,12 +109,13 @@ class User extends BaseController
         return $this->result->error("用户名或密码错误");
     }
 
-    function resetPwd(Request $reqeust){
+    function resetPwd(Request $reqeust)
+    {
         $code = $reqeust->post("code");
         $username = $reqeust->post("username");
         $new_password = $reqeust->post("new_password");
 
-        $user = UserModel::where("username",$username)->find();
+        $user = UserModel::where("username", $username)->find();
 
         session_start();
         if ($_SESSION['verification_code'] != $code) {
@@ -122,13 +123,46 @@ class User extends BaseController
         }
 
         $res = $user->save([
-            "password"=>password_hash($new_password,PASSWORD_DEFAULT)
+            "password" => password_hash($new_password, PASSWORD_DEFAULT)
         ]);
 
-        if($res){
-            return $this->result->success("修改密码成功",$res);
+        if ($res) {
+            return $this->result->success("修改密码成功", $res);
         }
         return $this->result->error("修改密码失败");
+    }
 
+    function deleteById($id)
+    {
+        $res = UserModel::where("id", $id)->delete();
+        if ($res) {
+            return $this->result->success("删除用户成功", $res);
+        }
+        return $this->result->error("删除用户失败");
+    }
+
+    function disabled($id)
+    {
+        $user = UserModel::where("id", $id)->find();
+        $res = $user->save([
+            "disabled" => 1
+        ]);
+        if ($res) {
+            return $this->result->success("禁用成功", $res);
+        }
+        return $this->result->error("禁用用户失败");
+    }
+
+    function page(Request $request)
+    {
+        $page = $request->param("page");
+        $pageSize = $request->param("pageSize");
+        $username = $request->param("username");
+
+        $list = UserModel::where("username", "like", "%{$username}%")->paginate([
+            "page" => $page,
+            "list_rows" => $pageSize,
+        ]);
+        return $this->result->success("获取分页数据成功", $list);
     }
 }

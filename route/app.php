@@ -11,16 +11,23 @@
 use think\facade\Route;
 
 
-Route::group("/user",function(){
+Route::group("/user", function () {
 
-    Route::post("/getcode","/user/getCode");
+    Route::post("/getcode", "/user/getCode");
 
-    Route::post("/register","user/register");
+    Route::post("/register", "user/register");
 
-    Route::post("/login","user/login");
+    Route::post("/login", "user/login");
 
-    Route::post("/resetpwd","user/resetpwd");
-
+    Route::post("/resetpwd", "user/resetpwd");
 });
 
-//24789
+Route::group("/user",function(){
+
+    Route::delete("/delete/:id","/user/deleteById");
+
+    Route::get("/disabled/:id","/user/disabled");
+
+    Route::get("/page","user/page");
+
+})->middleware(app\middleware\JwtMiddleware::class);
