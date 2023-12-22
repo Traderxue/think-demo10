@@ -7,6 +7,7 @@ use think\Request;
 use app\model\Assets as AssetsModel;
 use app\util\Res;
 
+//用户资金记录
 class Assets extends BaseController
 {
     public $result;
@@ -51,5 +52,23 @@ class Assets extends BaseController
     //审核
     public function verfiy($id)
     {
+        $assets = AssetsModel::where("id",$id)->find();
+        $res = $assets->save();
+        if($res){
+            return $this->result->success("审核通过",$assets);
+        }
+        return $this->result->error("审核失败");
+    }
+
+    public function page(Request $request){
+        $page = $request->param("page");
+        $pageSize = $request->param("pageSize");
+        $operate = $request->param("operate");
+        $list = AssetsModel::where("operate","like","%{$operate}%")->paginate([
+            "page"=>$page,
+            "list_rows"=>$pageSize
+        ]);
+
+        return $this->result->success("获取分页数据成功",$list);
     }
 }
