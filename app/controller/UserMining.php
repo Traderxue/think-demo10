@@ -75,4 +75,11 @@ class UserMining extends BaseController
 
         return $this->result->success("获取分页数据成功", $list);
     }
+
+    public function getByuid($u_id){
+
+        $list = UserMiningModel::where("u_id",$u_id)->select();
+
+        return $this->result->success("获取数据成功",$list);
+    }
 }
